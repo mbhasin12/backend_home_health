@@ -19,23 +19,7 @@ const db = mysql.createConnection({
 
 });
 
-function checkifUserExists(email) {
-    qr = `SELECT * FROM n_Auth WHERE email = "${email}"`
 
-    db.query(qr, (err, result) => {
-        
-        if (err) {
-            console.log(err);
-
-        }
-        if (result.length > 0) { 
-            console.log(result.email)
-        }
-        
-    })
-
-
-}
 
 //call this endpoint when creating a new account
  app.post('/users', async(req, res) => {
@@ -45,31 +29,42 @@ function checkifUserExists(email) {
         const hashedPassword = await bcrypt.hash(req.body.password, salt)
         
         
-        //if (checkifUserExists(req.body.email) === false) {
-            console.log('hi')
-            db.query('INSERT INTO n_Auth (lastName, firstName, email, password, roleLevel) VALUES (?, ?, ?, ?, ?)',
-            [req.body.lname, req.body.fname, req.body.email, hashedPassword, req.body.role]
-            ,(err, result) => {
-                console.log('2')
-                if (err) {
-                    console.log(err);
-                }
-                
-                //console.log(result);
-                
-                res.send(result);
+        qr = `SELECT * FROM n_Auth WHERE email = "${req.body.email}"`
+        //checks if the user exists
+        db.query(qr, (err, result) => {
+        
+            if (err) {
+                console.log(err);
+    
+            }
+            if (result.length < 1) {  //user does not exist
+                console.log("did not find a user with that log in");
 
-            }) 
-            
-        //}
-        //res.status(200).send()
+                db.query('INSERT INTO n_Auth (lastName, firstName, email, password, roleLevel) VALUES (?, ?, ?, ?, ?)',
+                    [req.body.lname, req.body.fname, req.body.email, hashedPassword, req.body.role]
+                    ,(err, result) => {
+                        
+                        if (err) {
+                            console.log(err);
+                            res.status(500).send()
+                        }
+                        
+                        res.send(result);
+
+                    }) 
+
+            }
+            else { 
+                res.status(500).send()
+                console.log('found a user with that log in')
+            }
+        })
+        
         
     }
     catch {
         res.status(500).send()
     }
-
-    
 
     
 
