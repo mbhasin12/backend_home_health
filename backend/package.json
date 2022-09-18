@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "devstart": "nodeman index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -14,5 +15,8 @@
     "cors": "^2.8.5",
     "express": "^4.18.1",
     "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "nodeman": "^1.1.2"
   }
 }

@@ -4,6 +4,7 @@ const express = require('express')
 const bodyparser = require("body-parser")
 const cors = require("cors")
 const app = express()
+const bcrypt = require('bcrypt')
 
 
 app.use(cors());
@@ -13,75 +14,95 @@ const mysql = require('mysql')
 const db = mysql.createConnection({
     user: "homehealth2022",
     host: "home-health-1.cq5vn6zebgoo.us-east-2.rds.amazonaws.com",
-    password: "", //!!!!!!!!!NEVER PUSH CODE WITH THE PASSWORD!!!!!!!!!!!
+    password: "DVNFrYyJO2ONYzGwyIZS", //!!!!!!!!!NEVER PUSH CODE WITH THE PASSWORD!!!!!!!!!!!
     database: "central_db"
 
 });
+
+function checkifUserExists(email) {
+    qr = `SELECT * FROM n_Auth WHERE email = "${email}"`
+
+    db.query(qr, (err, result) => {
+        
+        if (err) {
+            console.log(err);
+
+        }
+        if (result.length > 0) { 
+            console.log(result.email)
+        }
+        
+    })
+
+
+}
+
+//call this endpoint when creating a new account
+ app.post('/users', async(req, res) => {
+     //check if user already exisits
+    try {
+        const salt = await bcrypt.genSalt()
+        const hashedPassword = await bcrypt.hash(req.body.password, salt)
+        
+        
+        //if (checkifUserExists(req.body.email) === false) {
+            console.log('hi')
+            db.query('INSERT INTO n_Auth (lastName, firstName, email, password, roleLevel) VALUES (?, ?, ?, ?, ?)',
+            [req.body.lname, req.body.fname, req.body.email, hashedPassword, req.body.role]
+            ,(err, result) => {
+                console.log('2')
+                if (err) {
+                    console.log(err);
+                }
+                
+                //console.log(result);
+                
+                res.send(result);
+
+            }) 
+            
+        //}
+        //res.status(200).send()
+        
+    }
+    catch {
+        res.status(500).send()
+    }
+
+    
+
+    
+
+ })
+//log in endpoint
+ app.post('/users/login', async(req, res) => {
+     //query the db to find user
+    
+     qr = `SELECT * FROM n_Auth WHERE email = "${req.body.email}"`
+     db.query(qr, async(err, result) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send()
+            
+
+        }
+        if (result.length > 0) {
+            
+            try {
+                if (await bcrypt.compare(req.body.password, result[0].password)) {
+                   res.status(200).send()
+                }
+            }
+            catch {
+                res.status(500).send()
+            }
+        }
+    })
+    
+     
+ })
 
 app.listen(3001, () => {
     console.log("Server Running")
 })
 
-//some example api end points and sql queries for your learning convenience
-/*
-app.post('/insert', (req, res) => {
-
-    const countryName = req.body.countryName;
-    const pop = req.body.population;
-    db.query('INSERT INTO node_testing (countryName, population) VALUES (?, ?)',[countryName, pop] ,(err, result) => {
-        if (err) {
-            console.log(err);
-        }
-        
-        //console.log(result);
-        
-        res.send(result);
-        
-    })
-    console.log('This is the req');
-    console.log(req);
-})
-
-//get all countries
-app.get('/countries', (req, res) => {
-    let qr = 'SELECT * from node_testing';
-
-    db.query(qr, (err, result) => {
-        if (err) {
-            console.log(err);
-
-        }
-
-        if (result.length > 0) {
-            res.send({
-                message:'all countries',
-                data:result
-            })
-        }
-    })
-});
-
-app.get('/country/:id', (req, res) => {
-    const id = req.params.id;
-    let qr = `SELECT * from node_testing WHERE id = ${id};`
-
-    db.query(qr, (err, result) => {
-        if (err) {
-            console.log(err);
-        }
-
-        if (result.length > 0) {
-            res.send({
-                message:'Selected Country',
-                data:result
-            })
-        }
-        else {
-            res.send({
-                message: 'data not found'
-            })
-        }
-    })
-});
-
-*/
