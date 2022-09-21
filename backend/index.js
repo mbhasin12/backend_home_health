@@ -14,19 +14,18 @@ const mysql = require('mysql')
 const db = mysql.createConnection({
     user: "homehealth2022",
     host: "home-health-1.cq5vn6zebgoo.us-east-2.rds.amazonaws.com",
-    password: "", //!!!!!!!!!NEVER PUSH CODE WITH THE PASSWORD!!!!!!!!!!!
+    password: "DVNFrYyJO2ONYzGwyIZS", //!!!!!!!!!NEVER PUSH CODE WITH THE PASSWORD!!!!!!!!!!!
     database: "central_db"
 
 });
 
 
-
 //call this endpoint when creating a new account
  app.post('/users', async(req, res) => {
-     //check if user already exisits
+    
     try {
         const salt = await bcrypt.genSalt()
-        const hashedPassword = await bcrypt.hash(req.body.password, salt)
+        const hashedPassword = await bcrypt.hash(req.body.password, salt) //hash the password
         
         
         qr = `SELECT * FROM n_Auth WHERE email = "${req.body.email}"`
@@ -77,7 +76,7 @@ const db = mysql.createConnection({
      db.query(qr, async(err, result) => {
         if (err) {
             console.log(err);
-            res.status(500).send()
+            //res.status(500).send()
             
 
         }
@@ -85,7 +84,15 @@ const db = mysql.createConnection({
             
             try {
                 if (await bcrypt.compare(req.body.password, result[0].password)) {
-                   res.status(200).send()
+                    res.send({
+                        status: "200",
+                    })
+                   //res.status(200).send()
+                }
+                else {
+                    res.send({
+                        status: "400",
+                    })
                 }
             }
             catch {
