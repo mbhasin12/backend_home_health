@@ -97,12 +97,20 @@ const db = mysql.createConnection({
                 else {
                     res.send({
                         status: "400",
+                        message: "incorrect password"
                     })
                 }
             }
             catch {
                 res.status(500).send()
             }
+        }
+        else {
+            res.send({
+                status: "400",
+                message: "incorrect email"
+            })
+
         }
     })
     
