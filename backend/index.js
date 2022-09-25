@@ -14,7 +14,7 @@ const mysql = require('mysql')
 const db = mysql.createConnection({
     user: "homehealth2022",
     host: "home-health-1.cq5vn6zebgoo.us-east-2.rds.amazonaws.com",
-    password: "", //!!!!!!!!!NEVER PUSH CODE WITH THE PASSWORD!!!!!!!!!!!
+    password: "DVNFrYyJO2ONYzGwyIZS", //!!!!!!!!!NEVER PUSH CODE WITH THE PASSWORD!!!!!!!!!!!
     database: "central_db"
 
 });
@@ -115,6 +115,37 @@ const db = mysql.createConnection({
     })
     
      
+ })
+
+ //adding a new nurse
+ app.post('/new-nurse', async(req,res) => {
+    const nurseid = req.body.nurseid;
+    const fname = req.body.fname;
+    const lname = req.body.lname;
+    const phone = req.body.phone;
+    const email = req.body.email;
+    const skills = req.body.skill;
+    const org = req.body.org;
+
+    db.query('INSERT INTO n_Nurse (nurseid, firstName, lastName, email, phone, skillDescription, org) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    ,[nurseid, fname, lname, email, phone, skills, org] 
+    ,(err, result) => {
+        if (err) {
+            console.log(err);
+            res.send({
+                "status" : 400
+            
+            })
+        }
+        
+        console.log(result);
+        
+        res.send({
+            "status" : 200
+        });
+        
+    })
+
  })
 
 app.listen(3001, () => {
