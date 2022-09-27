@@ -14,7 +14,7 @@ const mysql = require('mysql')
 const db = mysql.createConnection({
     user: "homehealth2022",
     host: "home-health-1.cq5vn6zebgoo.us-east-2.rds.amazonaws.com",
-    password: "DVNFrYyJO2ONYzGwyIZS", //!!!!!!!!!NEVER PUSH CODE WITH THE PASSWORD!!!!!!!!!!!
+    password: "", //!!!!!!!!!NEVER PUSH CODE WITH THE PASSWORD!!!!!!!!!!!
     database: "central_db"
 
 });
@@ -144,6 +144,32 @@ const db = mysql.createConnection({
             "status" : 200
         });
         
+    })
+
+ })
+
+ //get all new nurses
+
+ app.get('/get-nurses', async(req, res) => {
+    org = req.body.org;
+    let qr = `SELECT * from n_Nurse WHERE org = "${org}"`;
+
+    db.query(qr, (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+
+        if (result.length > 0) {
+            res.send({
+                status:'200',
+                data:result
+            })
+        }
+        else {
+            res.send({
+                status: '400'
+            })
+        }
     })
 
  })
