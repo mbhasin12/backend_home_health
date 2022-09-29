@@ -14,7 +14,7 @@ const mysql = require('mysql')
 const db = mysql.createConnection({
     user: "homehealth2022",
     host: "home-health-1.cq5vn6zebgoo.us-east-2.rds.amazonaws.com",
-    password: "", //!!!!!!!!!NEVER PUSH CODE WITH THE PASSWORD!!!!!!!!!!!
+    password: "DVNFrYyJO2ONYzGwyIZS", //!!!!!!!!!NEVER PUSH CODE WITH THE PASSWORD!!!!!!!!!!!
     database: "central_db"
 
 });
@@ -150,7 +150,7 @@ const db = mysql.createConnection({
 
  //get all new nurses
 
- app.get('/get-nurses', async(req, res) => {
+ app.post('/get-nurses', async(req, res) => {
     org = req.body.org;
     let qr = `SELECT * from n_Nurse WHERE org = "${org}"`;
 
