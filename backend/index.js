@@ -174,6 +174,47 @@ const db = mysql.createConnection({
 
  })
 
+ app.post('/new-patient', async(req,res) => {
+    const patientid = req.body.patientid;
+    const fname = req.body.fname;
+    const lname = req.body.lname;
+    const dob = req.body.dob;
+    const email = req.body.email;
+    const phone = req.body.phone;
+
+    const startDate = req.body.startDate;
+    const endDate = req.body.endDate;
+
+    const street = req.body.street;
+    const city = req.body.city;
+    const zip = req.body.zip;
+    const assignedNurse = req.body.assignedNurse;
+
+    const treatmentDesc = req.body.treatmentDesc
+    
+    
+
+    db.query('INSERT INTO n_Patient (patientid, firstName, lastName, dateOfBirth, email, phone, startDate, endDate, treatmentDescription, streetAddr, cityAddr, zipAddr, assigned_nurse) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    ,[patientid, fname, lname, dob, email, phone, startDate, endDate, treatmentDesc, street, city, zip, assignedNurse] 
+    ,(err, result) => {
+        if (err) {
+            console.log(err);
+            res.send({
+                "status" : 400
+            
+            })
+        }
+        
+        console.log(result);
+        
+        res.send({
+            "status" : 200
+        });
+        
+    })
+
+ })
+
 app.listen(3001, () => {
     console.log("Server Running")
 })
