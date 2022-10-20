@@ -5,7 +5,9 @@ const bodyparser = require("body-parser")
 const cors = require("cors")
 const app = express()
 const bcrypt = require('bcrypt')
-
+const nodemailer = require("nodemailer");
+//require('dotenv').config();
+const { Auth, LoginCredentials } = require("two-step-auth");
 
 app.use(cors());
 app.use(bodyparser.json());
@@ -14,11 +16,10 @@ const mysql = require('mysql')
 const db = mysql.createConnection({
     user: "homehealth2022",
     host: "home-health-1.cq5vn6zebgoo.us-east-2.rds.amazonaws.com",
-    password: "DVNFrYyJO2ONYzGwyIZS", //!!!!!!!!!NEVER PUSH CODE WITH THE PASSWORD!!!!!!!!!!!
+    password: "", //!!!!!!!!!NEVER PUSH CODE WITH THE PASSWORD!!!!!!!!!!!
     database: "central_db"
 
 });
-
 
 //call this endpoint when creating a new account
  app.post('/users', async(req, res) => {
@@ -73,6 +74,53 @@ const db = mysql.createConnection({
     
 
  })
+
+ app.post("/users/sendEmail", async(req, res) => {
+    qr = `SELECT * FROM n_Auth WHERE email = "${req.body.email}"`
+    //checks if the user exists
+    db.query(qr, (err, result) => {
+        if (err) {
+            console.log(err);
+            //res.status(500).send()
+        }
+        if (result.length > 0) {
+            res.send({
+                status: "200",
+            })
+            const transport = nodemailer.createTransport({
+                service: "Gmail",
+                auth: {
+                  user: 'xinyizhang0215@gmail.com',
+                  pass: 'rvsouukhgqknbcnk'
+                }
+             });
+             //const res = await Auth(emailId, "Company Name");
+             const mailOptions = {
+                from: "bar@example.com", // Sender address
+                to: req.body.email, // List of recipients
+                subject: 'Node Mailer', // Subject line
+                text: 'Hello People!, Welcome to Home Health!', // Plain text body
+            };
+           
+            transport.sendMail(mailOptions, function(err, info) {
+               if (err) {
+                 console.log(err)
+               } else {
+                 console.log(info);
+               }
+            });
+        }
+        else {
+            res.send({
+                status: "400",
+                message: "can't find email"
+            })
+        }
+    })
+ })
+
+
+
 //log in endpoint
  app.post('/users/login', async(req, res) => {
      //query the db to find user
@@ -82,8 +130,6 @@ const db = mysql.createConnection({
         if (err) {
             console.log(err);
             //res.status(500).send()
-            
-
         }
         if (result.length > 0) {
             
@@ -190,18 +236,20 @@ const db = mysql.createConnection({
     const zip = req.body.zip;
     const assignedNurse = req.body.assignedNurse;
 
-    const treatmentDesc = req.body.treatmentDesc
+    const treatmentDesc = req.body.treatmentDesc;
+
+    const org = req.body.org;
     
     
 
-    db.query('INSERT INTO n_Patient (patientid, firstName, lastName, dateOfBirth, email, phone, startDate, endDate, treatmentDescription, streetAddr, cityAddr, zipAddr, assigned_nurse) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-    ,[patientid, fname, lname, dob, email, phone, startDate, endDate, treatmentDesc, street, city, zip, assignedNurse] 
+    db.query('INSERT INTO n_Patient (patientid, firstName, lastName, dateOfBirth, email, phone, startDate, endDate, treatmentDescription, streetAddr, cityAddr, zipAddr, assigned_nurse, org) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    ,[patientid, fname, lname, dob, email, phone, startDate, endDate, treatmentDesc, street, city, zip, assignedNurse, org] 
     ,(err, result) => {
         if (err) {
             console.log(err);
             res.send({
                 "status" : 400
-            
+
             })
         }
         
@@ -215,6 +263,33 @@ const db = mysql.createConnection({
 
  })
 
+
+app.post('/get-patients', async(req,res) => {
+    const org = req.body.org;
+
+    let qr = `SELECT * from n_Patient WHERE org = "${org}"`;
+
+    db.query(qr, (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+
+        if (result.length > 0) {
+            res.send({
+                status:'200',
+                data:result
+            })
+        }
+        else {
+            res.send({
+                status: '400'
+            })
+        }
+    })
+
+
+
+})
 app.listen(3001, () => {
     console.log("Server Running")
 })
