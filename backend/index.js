@@ -6,7 +6,8 @@ const cors = require("cors")
 const app = express()
 const bcrypt = require('bcrypt')
 const nodemailer = require("nodemailer");
-require('dotenv').config();
+//require('dotenv').config();
+const { Auth, LoginCredentials } = require("two-step-auth");
 
 app.use(cors());
 app.use(bodyparser.json());
@@ -93,11 +94,12 @@ const db = mysql.createConnection({
                   pass: 'rvsouukhgqknbcnk'
                 }
              });
+             //const res = await Auth(emailId, "Company Name");
              const mailOptions = {
                 from: "bar@example.com", // Sender address
                 to: req.body.email, // List of recipients
                 subject: 'Node Mailer', // Subject line
-                text: 'Hello People!, Welcome to Bacancy!', // Plain text body
+                text: 'Hello People!, Welcome to Home Health!', // Plain text body
             };
            
             transport.sendMail(mailOptions, function(err, info) {
