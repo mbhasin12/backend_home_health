@@ -5,7 +5,8 @@ const bodyparser = require("body-parser")
 const cors = require("cors")
 const app = express()
 const bcrypt = require('bcrypt')
-
+const nodemailer = require("nodemailer");
+require('dotenv').config();
 
 app.use(cors());
 app.use(bodyparser.json());
@@ -18,7 +19,6 @@ const db = mysql.createConnection({
     database: "central_db"
 
 });
-
 
 //call this endpoint when creating a new account
  app.post('/users', async(req, res) => {
@@ -73,6 +73,52 @@ const db = mysql.createConnection({
     
 
  })
+
+ app.post("/users/sendEmail", async(req, res) => {
+    qr = `SELECT * FROM n_Auth WHERE email = "${req.body.email}"`
+    //checks if the user exists
+    db.query(qr, (err, result) => {
+        if (err) {
+            console.log(err);
+            //res.status(500).send()
+        }
+        if (result.length > 0) {
+            res.send({
+                status: "200",
+            })
+            const transport = nodemailer.createTransport({
+                service: "Gmail",
+                auth: {
+                  user: 'xinyizhang0215@gmail.com',
+                  pass: 'rvsouukhgqknbcnk'
+                }
+             });
+             const mailOptions = {
+                from: "bar@example.com", // Sender address
+                to: req.body.email, // List of recipients
+                subject: 'Node Mailer', // Subject line
+                text: 'Hello People!, Welcome to Bacancy!', // Plain text body
+            };
+           
+            transport.sendMail(mailOptions, function(err, info) {
+               if (err) {
+                 console.log(err)
+               } else {
+                 console.log(info);
+               }
+            });
+        }
+        else {
+            res.send({
+                status: "400",
+                message: "can't find email"
+            })
+        }
+    })
+ })
+
+
+
 //log in endpoint
  app.post('/users/login', async(req, res) => {
      //query the db to find user
@@ -82,8 +128,6 @@ const db = mysql.createConnection({
         if (err) {
             console.log(err);
             //res.status(500).send()
-            
-
         }
         if (result.length > 0) {
             
@@ -203,7 +247,7 @@ const db = mysql.createConnection({
             console.log(err);
             res.send({
                 "status" : 400
-            
+
             })
         }
         
