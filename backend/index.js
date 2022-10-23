@@ -16,7 +16,7 @@ const mysql = require('mysql')
 const db = mysql.createConnection({
     user: "homehealth2022",
     host: "home-health-1.cq5vn6zebgoo.us-east-2.rds.amazonaws.com",
-    password: "", //!!!!!!!!!NEVER PUSH CODE WITH THE PASSWORD!!!!!!!!!!!
+    password: "DVNFrYyJO2ONYzGwyIZS", //!!!!!!!!!NEVER PUSH CODE WITH THE PASSWORD!!!!!!!!!!!
     database: "central_db"
 
 });
@@ -287,6 +287,62 @@ app.post('/get-patients', async(req,res) => {
         }
     })
 
+
+
+})
+
+app.post('/new-calendar-event', async(req,res) => {
+    const title = req.body.title;
+    const date_time_start = req.body.date_time_start;
+    const date_time_end = req.body.date_time_end;
+    const reccuring = req.body.reccuring;
+    const nurse_name = req.body.nurse_name;
+    const patient_name = req.body.patient_name;
+    const org = req.body.org;
+
+    db.query('INSERT INTO calendar_events (title, time_start, time_end, recurring, nurse_name, patient_name, org) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    ,[title, date_time_start, date_time_end, reccuring, nurse_name, patient_name, org] 
+    ,(err, result) => {
+        if (err) {
+            console.log(err);
+            res.send({
+                "status" : 400
+            
+            })
+        }
+        
+        console.log(result);
+        
+        res.send({
+            "status" : 200
+        });
+        
+    })
+
+ })
+
+app.post('/get-calendar-event', async(req,res) => {
+    const org = req.body.org;
+
+    let qr = `SELECT * from calendar_events WHERE org = "${org}"`;
+
+    db.query(qr, (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+
+        if (result.length > 0) {
+            res.send({
+                status:'200',
+                data:result
+            })
+        }
+        else {
+            res.send({
+                status: '400'
+            })
+        }
+    })
 
 
 })
