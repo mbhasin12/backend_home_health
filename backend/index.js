@@ -16,7 +16,7 @@ const mysql = require('mysql')
 const db = mysql.createConnection({
     user: "homehealth2022",
     host: "home-health-1.cq5vn6zebgoo.us-east-2.rds.amazonaws.com",
-    password: "", //!!!!!!!!!NEVER PUSH CODE WITH THE PASSWORD!!!!!!!!!!!
+    password: "",
     database: "central_db"
 
 });
@@ -171,10 +171,10 @@ const db = mysql.createConnection({
     const phone = req.body.phone;
     const email = req.body.email;
     const skills = req.body.skill;
-    const org = req.body.org;
+    const orgId = req.body.org;
 
-    db.query('INSERT INTO n_Nurse (nurseid, firstName, lastName, email, phone, skillDescription, org) VALUES (?, ?, ?, ?, ?, ?, ?)'
-    ,[nurseid, fname, lname, email, phone, skills, org] 
+    db.query('INSERT INTO n_Nurse (nurseid, firstName, lastName, email, phone, skillDescription, orgId) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    ,[nurseid, fname, lname, email, phone, skills, orgId] 
     ,(err, result) => {
         if (err) {
             console.log(err);
@@ -197,8 +197,8 @@ const db = mysql.createConnection({
  //get all new nurses
 
  app.post('/get-nurses', async(req, res) => {
-    org = req.body.org;
-    let qr = `SELECT * from n_Nurse WHERE org = "${org}"`;
+    orgId = req.body.org;
+    let qr = `SELECT * from n_Nurse WHERE orgId = "${orgId}"`;
 
     db.query(qr, (err, result) => {
         if (err) {
@@ -238,12 +238,12 @@ const db = mysql.createConnection({
 
     const treatmentDesc = req.body.treatmentDesc;
 
-    const org = req.body.org;
+    const orgId = req.body.org;
     
     
 
-    db.query('INSERT INTO n_Patient (patientid, firstName, lastName, dateOfBirth, email, phone, startDate, endDate, treatmentDescription, streetAddr, cityAddr, zipAddr, assigned_nurse, org) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-    ,[patientid, fname, lname, dob, email, phone, startDate, endDate, treatmentDesc, street, city, zip, assignedNurse, org] 
+    db.query('INSERT INTO n_Patient (patientid, firstName, lastName, dateOfBirth, email, phone, startDate, endDate, treatmentDescription, streetAddr, cityAddr, zipAddr, assigned_nurse, orgId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    ,[patientid, fname, lname, dob, email, phone, startDate, endDate, treatmentDesc, street, city, zip, assignedNurse, orgId] 
     ,(err, result) => {
         if (err) {
             console.log(err);
@@ -265,9 +265,9 @@ const db = mysql.createConnection({
 
 
 app.post('/get-patients', async(req,res) => {
-    const org = req.body.org;
+    const orgId = req.body.org;
 
-    let qr = `SELECT * from n_Patient WHERE org = "${org}"`;
+    let qr = `SELECT * from n_Patient WHERE orgId = "${orgId}"`;
 
     db.query(qr, (err, result) => {
         if (err) {
