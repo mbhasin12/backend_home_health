@@ -205,10 +205,10 @@ const db = mysql.createConnection({
     const phone = req.body.phone;
     const email = req.body.email;
     const skills = req.body.skill;
-    const org = req.body.org;
+    const orgId = req.body.org;
 
-    db.query('INSERT INTO n_Nurse (nurseid, firstName, lastName, email, phone, skillDescription, org) VALUES (?, ?, ?, ?, ?, ?, ?)'
-    ,[nurseid, fname, lname, email, phone, skills, org] 
+    db.query('INSERT INTO n_Nurse (nurseid, firstName, lastName, email, phone, skillDescription, orgId) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    ,[nurseid, fname, lname, email, phone, skills, orgId] 
     ,(err, result) => {
         if (err) {
             console.log(err);
@@ -231,8 +231,8 @@ const db = mysql.createConnection({
  //get all new nurses
 
  app.post('/get-nurses', async(req, res) => {
-    org = req.body.org;
-    let qr = `SELECT * from n_Nurse WHERE org = "${org}"`;
+    orgId = req.body.org;
+    let qr = `SELECT * from n_Nurse WHERE orgId = "${orgId}"`;
 
     db.query(qr, (err, result) => {
         if (err) {
@@ -272,12 +272,12 @@ const db = mysql.createConnection({
 
     const treatmentDesc = req.body.treatmentDesc;
 
-    const org = req.body.org;
+    const orgId = req.body.org;
     
     
 
-    db.query('INSERT INTO n_Patient (patientid, firstName, lastName, dateOfBirth, email, phone, startDate, endDate, treatmentDescription, streetAddr, cityAddr, zipAddr, assigned_nurse, org) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-    ,[patientid, fname, lname, dob, email, phone, startDate, endDate, treatmentDesc, street, city, zip, assignedNurse, org] 
+    db.query('INSERT INTO n_Patient (patientid, firstName, lastName, dateOfBirth, email, phone, startDate, endDate, treatmentDescription, streetAddr, cityAddr, zipAddr, assigned_nurse, orgId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    ,[patientid, fname, lname, dob, email, phone, startDate, endDate, treatmentDesc, street, city, zip, assignedNurse, orgId] 
     ,(err, result) => {
         if (err) {
             console.log(err);
@@ -299,9 +299,9 @@ const db = mysql.createConnection({
 
 
 app.post('/get-patients', async(req,res) => {
-    const org = req.body.org;
+    const orgId = req.body.org;
 
-    let qr = `SELECT * from n_Patient WHERE org = "${org}"`;
+    let qr = `SELECT * from n_Patient WHERE orgId = "${orgId}"`;
 
     db.query(qr, (err, result) => {
         if (err) {
@@ -334,7 +334,7 @@ app.post('/new-calendar-event', async(req,res) => {
     const patient_name = req.body.patient_name;
     const org = req.body.org;
 
-    db.query('INSERT INTO calendar_events (title, time_start, time_end, recurring, nurse_name, patient_name, org) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    db.query('INSERT INTO calendar_events (title, time_start, time_end, recurring, nurse_name, patient_name, orgId) VALUES (?, ?, ?, ?, ?, ?, ?)'
     ,[title, date_time_start, date_time_end, reccuring, nurse_name, patient_name, org] 
     ,(err, result) => {
         if (err) {
@@ -358,7 +358,7 @@ app.post('/new-calendar-event', async(req,res) => {
 app.post('/get-calendar-event', async(req,res) => {
     const org = req.body.org;
 
-    let qr = `SELECT * from calendar_events WHERE org = "${org}"`;
+    let qr = `SELECT * from calendar_events WHERE orgId = "${org}"`;
 
     db.query(qr, (err, result) => {
         if (err) {
