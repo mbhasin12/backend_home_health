@@ -16,7 +16,7 @@ const mysql = require('mysql')
 const db = mysql.createConnection({
     user: "homehealth2022",
     host: "home-health-1.cq5vn6zebgoo.us-east-2.rds.amazonaws.com",
-    password: "DVNFrYyJO2ONYzGwyIZS", //!!!!!!!!!NEVER PUSH CODE WITH THE PASSWORD!!!!!!!!!!!
+    password: "DVNFrYyJO2ONYzGwyIZS",
     database: "central_db"
 
 });
@@ -75,40 +75,6 @@ const db = mysql.createConnection({
 
  })
 
- //reset password
- app.post("/users/resetPassword", async(req, res)=>{
-
-    const salt = await bcrypt.genSalt()
-    const hashedPassword = await bcrypt.hash(req.body.newPassword, salt)
-
-    console.log("resetting")
-    qr = `SELECT * FROM n_Auth WHERE email = "${req.body.email}"`
-    db.query(qr, (err, result)=>{
-        if(err){
-            console.log(err);
-        }
-        if (result.length > 0){
-            qr2 = `UPDATE n_Auth SET password = "${hashedPassword}" WHERE email = "${req.body.email}"`
-            db.query(qr2, (err, result)=>{
-                console.log(result)
-                if(err){
-                    console.log(err);
-                }
-                res.send({
-                    status: "200"
-                })
-
-            })
-        } else{
-            res.send({
-                status: "400",
-                message: "can't find email"
-            });
-        }
-    })
-    
- })
-
  app.post("/users/sendEmail", async(req, res) => {
     qr = `SELECT * FROM n_Auth WHERE email = "${req.body.email}"`
     //checks if the user exists
@@ -133,7 +99,7 @@ const db = mysql.createConnection({
                 from: "bar@example.com", // Sender address
                 to: req.body.email, // List of recipients
                 subject: 'Node Mailer', // Subject line
-                text: 'Your pin to reset the password is 4444', // Plain text body
+                text: 'Hello People!, Welcome to Home Health!', // Plain text body
             };
            
             transport.sendMail(mailOptions, function(err, info) {
