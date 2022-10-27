@@ -133,7 +133,7 @@ const db = mysql.createConnection({
                 from: "bar@example.com", // Sender address
                 to: req.body.email, // List of recipients
                 subject: 'Node Mailer', // Subject line
-                text: 'Hello People!, Welcome to Home Health!', // Plain text body
+                text: 'Your pin to reset the password is 4444', // Plain text body
             };
            
             transport.sendMail(mailOptions, function(err, info) {
