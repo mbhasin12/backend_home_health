@@ -16,7 +16,7 @@ const mysql = require('mysql')
 const db = mysql.createConnection({
     user: "homehealth2022",
     host: "home-health-1.cq5vn6zebgoo.us-east-2.rds.amazonaws.com",
-    password: "DVNFrYyJO2ONYzGwyIZS",
+    password: "",
     database: "central_db"
 
 });
