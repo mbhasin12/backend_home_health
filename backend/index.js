@@ -16,7 +16,7 @@ const mysql = require('mysql')
 const db = mysql.createConnection({
     user: "homehealth2022",
     host: "home-health-1.cq5vn6zebgoo.us-east-2.rds.amazonaws.com",
-    password: "",
+    password: "DVNFrYyJO2ONYzGwyIZS",
     database: "central_db"
 
 });
@@ -300,7 +300,7 @@ app.post('/new-calendar-event', async(req,res) => {
     const patient_name = req.body.patient_name;
     const org = req.body.org;
 
-    db.query('INSERT INTO calendar_events (title, time_start, time_end, recurring, nurse_name, patient_name, org) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    db.query('INSERT INTO calendar_events (title, time_start, time_end, recurring, nurse_name, patient_name, orgId) VALUES (?, ?, ?, ?, ?, ?, ?)'
     ,[title, date_time_start, date_time_end, reccuring, nurse_name, patient_name, org] 
     ,(err, result) => {
         if (err) {
@@ -324,7 +324,7 @@ app.post('/new-calendar-event', async(req,res) => {
 app.post('/get-calendar-event', async(req,res) => {
     const org = req.body.org;
 
-    let qr = `SELECT * from calendar_events WHERE org = "${org}"`;
+    let qr = `SELECT * from calendar_events WHERE orgId = "${org}"`;
 
     db.query(qr, (err, result) => {
         if (err) {
