@@ -96,7 +96,7 @@ const db = mysql.createConnection({
 
             async function sendSth(emailId) {
                 try {
-                    const res = await Auth(emailId, "Company Name");
+                    const res = await Auth(emailId, "Home Health Dashboard");
                     return res.OTP;
                 } catch (error) {
                   console.log(error);
