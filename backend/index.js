@@ -74,7 +74,41 @@ const db = mysql.createConnection({
     
 
  })
+ //reset password
+ app.post("/users/resetPassword", async(req, res)=>{
 
+    const salt = await bcrypt.genSalt()
+    const hashedPassword = await bcrypt.hash(req.body.newPassword, salt)
+
+    console.log("resetting")
+    qr = `SELECT * FROM n_Auth WHERE email = "${req.body.email}"`
+    db.query(qr, (err, result)=>{
+        if(err){
+            console.log(err);
+        }
+        if (result.length > 0){
+            console.log("reset in action")
+            qr2 = `UPDATE n_Auth SET password = "${hashedPassword}" WHERE email = "${req.body.email}"`
+            db.query(qr2, (err, result)=>{
+                console.log(result)
+                if(err){
+                    console.log(err);
+                }
+                res.send({
+                    status: "200"
+                })
+
+            })
+        } else{
+            res.send({
+                status: "400",
+                message: "can't find email"
+            });
+        }
+    })
+
+ })
+ 
  app.post("/users/sendEmail", async(req, res) => {
     qr = `SELECT * FROM n_Auth WHERE email = "${req.body.email}"`
     //checks if the user exists
