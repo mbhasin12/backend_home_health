@@ -83,10 +83,9 @@ const db = mysql.createConnection({
             console.log(err);
             //res.status(500).send()
         }
+        console.log(result)
         if (result.length > 0) {
-            res.send({
-                status: "200",
-            })
+            
             const transport = nodemailer.createTransport({
                 service: "Gmail",
                 auth: {
@@ -94,21 +93,30 @@ const db = mysql.createConnection({
                   pass: 'rvsouukhgqknbcnk'
                 }
              });
-             //const res = await Auth(emailId, "Company Name");
-             const mailOptions = {
-                from: "bar@example.com", // Sender address
-                to: req.body.email, // List of recipients
-                subject: 'Node Mailer', // Subject line
-                text: 'Hello People!, Welcome to Home Health!', // Plain text body
-            };
-           
-            transport.sendMail(mailOptions, function(err, info) {
-               if (err) {
-                 console.log(err)
-               } else {
-                 console.log(info);
-               }
-            });
+
+            async function sendSth(emailId) {
+                try {
+                    const res = await Auth(emailId, "Company Name");
+                    return res.OTP;
+                } catch (error) {
+                  console.log(error);
+                }
+            }
+            
+
+            async function printPikachuMessage() {
+                const pikachuMessage = await sendSth(req.body.email)
+                console.log("Pin " + pikachuMessage);
+                res.send({
+                    status: "200",
+                    message: pikachuMessage
+                })
+            }
+            
+            printPikachuMessage();
+            
+            
+
         }
         else {
             res.send({
@@ -118,8 +126,6 @@ const db = mysql.createConnection({
         }
     })
  })
-
-
 
 //log in endpoint
  app.post('/users/login', async(req, res) => {
