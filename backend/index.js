@@ -177,6 +177,9 @@ const db = mysql.createConnection({
                 if (await bcrypt.compare(req.body.password, result[0].password)) {
                     res.send({
                         status: "200",
+                        firstname: result[0].firstName,
+                        lastname: result[0].lastName,
+                        role: result[0].roleLevel
                     })
                    //res.status(200).send()
                 }
