@@ -364,6 +364,8 @@ app.post('/new-calendar-event', async(req,res) => {
 
  })
 
+
+ 
 app.post('/get-calendar-event', async(req,res) => {
     const org = req.body.org;
 
@@ -388,7 +390,34 @@ app.post('/get-calendar-event', async(req,res) => {
     })
 
 
-})
+}) 
+
+app.post('/delete-calendar-event', async(req,res) => {
+    const title = req.body.title;
+
+    let qr = `DELETE from calendar_events WHERE title = "${title}"`;
+
+    db.query(qr, (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+
+        if (result.length > 0) {
+            res.send({
+                status:'200',
+                data:result
+            })
+        }
+        else {
+            res.send({
+                status: '400'
+            })
+        }
+    })
+
+
+}) 
+
 app.listen(3001, () => {
     console.log("Server Running")
 })
