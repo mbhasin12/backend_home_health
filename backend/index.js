@@ -179,7 +179,8 @@ const db = mysql.createConnection({
                         status: "200",
                         firstname: result[0].firstName,
                         lastname: result[0].lastName,
-                        role: result[0].roleLevel
+                        role: result[0].roleLevel,
+                        orgId: result[0].orgId
                     })
                    //res.status(200).send()
                 }
