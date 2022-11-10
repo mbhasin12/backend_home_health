@@ -16,6 +16,7 @@ const mysql = require('mysql')
 const db = mysql.createConnection({
     user: "homehealth2022",
     host: "home-health-1.cq5vn6zebgoo.us-east-2.rds.amazonaws.com",
+    password: "DVNFrYyJO2ONYzGwyIZS",
     password: "", //!!!!!!!!!NEVER PUSH CODE WITH THE PASSWORD!!!!!!!!!!!
     database: "central_db"
 
@@ -74,7 +75,6 @@ const db = mysql.createConnection({
     
 
  })
-
  //reset password
  app.post("/users/resetPassword", async(req, res)=>{
 
@@ -88,6 +88,7 @@ const db = mysql.createConnection({
             console.log(err);
         }
         if (result.length > 0){
+            console.log("reset in action")
             qr2 = `UPDATE n_Auth SET password = "${hashedPassword}" WHERE email = "${req.body.email}"`
             db.query(qr2, (err, result)=>{
                 console.log(result)
@@ -106,9 +107,9 @@ const db = mysql.createConnection({
             });
         }
     })
-    
- })
 
+ })
+ 
  app.post("/users/sendEmail", async(req, res) => {
     qr = `SELECT * FROM n_Auth WHERE email = "${req.body.email}"`
     //checks if the user exists
@@ -117,10 +118,9 @@ const db = mysql.createConnection({
             console.log(err);
             //res.status(500).send()
         }
+        console.log(result)
         if (result.length > 0) {
-            res.send({
-                status: "200",
-            })
+            
             const transport = nodemailer.createTransport({
                 service: "Gmail",
                 auth: {
@@ -128,21 +128,30 @@ const db = mysql.createConnection({
                   pass: 'rvsouukhgqknbcnk'
                 }
              });
-             //const res = await Auth(emailId, "Company Name");
-             const mailOptions = {
-                from: "bar@example.com", // Sender address
-                to: req.body.email, // List of recipients
-                subject: 'Node Mailer', // Subject line
-                text: 'Your pin to reset the password is 4444', // Plain text body
-            };
-           
-            transport.sendMail(mailOptions, function(err, info) {
-               if (err) {
-                 console.log(err)
-               } else {
-                 console.log(info);
-               }
-            });
+
+            async function sendSth(emailId) {
+                try {
+                    const res = await Auth(emailId, "Home Health Dashboard");
+                    return res.OTP;
+                } catch (error) {
+                  console.log(error);
+                }
+            }
+            
+
+            async function printPikachuMessage() {
+                const pikachuMessage = await sendSth(req.body.email)
+                console.log("Pin " + pikachuMessage);
+                res.send({
+                    status: "200",
+                    message: pikachuMessage
+                })
+            }
+            
+            printPikachuMessage();
+            
+            
+
         }
         else {
             res.send({
@@ -152,8 +161,6 @@ const db = mysql.createConnection({
         }
     })
  })
-
-
 
 //log in endpoint
  app.post('/users/login', async(req, res) => {
@@ -171,6 +178,9 @@ const db = mysql.createConnection({
                 if (await bcrypt.compare(req.body.password, result[0].password)) {
                     res.send({
                         status: "200",
+                        firstname: result[0].firstName,
+                        lastname: result[0].lastName,
+                        role: result[0].roleLevel
                     })
                    //res.status(200).send()
                 }
@@ -355,6 +365,8 @@ app.post('/new-calendar-event', async(req,res) => {
 
  })
 
+
+ 
 app.post('/get-calendar-event', async(req,res) => {
     const org = req.body.org;
 
@@ -379,7 +391,31 @@ app.post('/get-calendar-event', async(req,res) => {
     })
 
 
-})
+}) 
+
+app.post('/delete-calendar-event', async(req,res) => {
+    const title = req.body.title;
+
+    let qr = `DELETE from calendar_events WHERE title = "${title}"`;
+
+    db.query(qr, (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+
+        if (result.length > 0) {
+            res.send({
+                status:'200',
+                data:result
+            })
+        }
+        else {
+            res.send({
+                status: '400'
+            })
+        }
+    })
+}) 
 
 app.post('/get-orgname', async(req, res) => {
     const orgId = req.body.orgId;
