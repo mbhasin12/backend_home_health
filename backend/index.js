@@ -16,7 +16,7 @@ const mysql = require('mysql')
 const db = mysql.createConnection({
     user: "homehealth2022",
     host: "home-health-1.cq5vn6zebgoo.us-east-2.rds.amazonaws.com",
-    password: "DVNFrYyJO2ONYzGwyIZS", //!!!!!!!!!NEVER PUSH CODE WITH THE PASSWORD!!!!!!!!!!!
+    password: "", //!!!!!!!!!NEVER PUSH CODE WITH THE PASSWORD!!!!!!!!!!!
     database: "central_db"
 
 });
@@ -380,6 +380,31 @@ app.post('/get-calendar-event', async(req,res) => {
 
 
 })
+
+app.post('/get-orgname', async(req, res) => {
+    const orgId = req.body.orgId;
+
+    let qr = `SELECT orgName FROM orgs WHERE orgId = ${orgId}`;
+
+    db.query(qr, (err, result) => {
+        if(err) {
+            console.log(err);
+        }
+
+        if (result.length > 0) {
+            res.send({
+                status:'200',
+                data:result
+            })
+        }
+        else {
+            res.send({
+                status: '400'
+            })
+        }
+    })
+})
+
 app.listen(3001, () => {
     console.log("Server Running")
 })
