@@ -336,6 +336,7 @@ app.post('/get-patients', async(req,res) => {
 })
 
 app.post('/new-calendar-event', async(req,res) => {
+    const id = req.body.id;
     const title = req.body.title;
     const date_time_start = req.body.date_time_start;
     const date_time_end = req.body.date_time_end;
@@ -344,8 +345,8 @@ app.post('/new-calendar-event', async(req,res) => {
     const patient_name = req.body.patient_name;
     const org = req.body.org;
 
-    db.query('INSERT INTO calendar_events (title, time_start, time_end, recurring, nurse_name, patient_name, orgId) VALUES (?, ?, ?, ?, ?, ?, ?)'
-    ,[title, date_time_start, date_time_end, reccuring, nurse_name, patient_name, org] 
+    db.query('INSERT INTO calendar_events (event_id, title, time_start, time_end, recurring, nurse_name, patient_name, orgId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+    ,[id, title, date_time_start, date_time_end, reccuring, nurse_name, patient_name, org] 
     ,(err, result) => {
         if (err) {
             console.log(err);
@@ -394,9 +395,10 @@ app.post('/get-calendar-event', async(req,res) => {
 }) 
 
 app.post('/delete-calendar-event', async(req,res) => {
-    const title = req.body.title;
+    //const title = req.body.title + ' ' + req.body.id;
+    const id = req.body.id;
 
-    let qr = `DELETE from calendar_events WHERE title = "${title}"`;
+    let qr = `DELETE from calendar_events WHERE event_id = "${id}"`;
 
     db.query(qr, (err, result) => {
         if (err) {
