@@ -443,6 +443,25 @@ app.post('/get-orgname', async(req, res) => {
     })
 })
 
+app.post('/log_login', async(req,res) => {
+    const id = req.body.id;
+    const org = req.body.org;
+    const time = req.body.time;
+    const qr = `INSERT INTO n_Login_Log (userId, orgId, time) VALUES (${id}, ${org}, "${time}")`
+    db.query(qr
+    ,(err, result) => {
+        if (err) {
+            console.log(err)
+            res.send({
+                "status" : 400
+            })
+        }
+        res.send({
+            "status" : 200
+        });
+    })
+ })
+
 app.listen(3001, () => {
     console.log("Server Running")
 })
