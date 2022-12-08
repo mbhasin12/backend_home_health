@@ -16,7 +16,7 @@ const mysql = require('mysql')
 const db = mysql.createConnection({
     user: "homehealth2022",
     host: "home-health-1.cq5vn6zebgoo.us-east-2.rds.amazonaws.com",
-    password: "", //!!!!!!!!!NEVER PUSH CODE WITH THE PASSWORD!!!!!!!!!!!
+    password: "DVNFrYyJO2ONYzGwyIZS", //!!!!!!!!!NEVER PUSH CODE WITH THE PASSWORD!!!!!!!!!!!
     database: "central_db"
 
 });
@@ -180,7 +180,8 @@ const db = mysql.createConnection({
                         firstname: result[0].firstName,
                         lastname: result[0].lastName,
                         role: result[0].roleLevel,
-                        orgId: result[0].orgId
+                        orgId: result[0].orgId,
+                        userId: result[0].userId
                     })
                    //res.status(200).send()
                 }
@@ -447,8 +448,8 @@ app.post('/log_login', async(req,res) => {
     const id = req.body.id;
     const org = req.body.org;
     const time = req.body.time;
-    const qr = `INSERT INTO n_Login_Log (userId, orgId, time) VALUES (${id}, ${org}, "${time}")`
-    db.query(qr
+    db.query('INSERT INTO n_Login_Log (userId, orgId, start_time) VALUES (?, ?, ?)',
+    [id, org, time]
     ,(err, result) => {
         if (err) {
             console.log(err)
@@ -456,11 +457,37 @@ app.post('/log_login', async(req,res) => {
                 "status" : 400
             })
         }
-        res.send({
-            "status" : 200
-        });
+        db.query(`SELECT loginId FROM n_Login_Log WHERE userId = ${id} AND orgId = ${org} AND start_time = "${time}"`,
+        (err, result) => {
+            if(err){
+                console.log(err)
+                res.send({
+                    status : 400
+                })
+            } else {
+                res.send({
+                    status:200,
+                    data:result[0]
+                })
+            }
+        })
     })
- })
+ }) 
+
+ app.post('/log_login_end', async(req, res) => {
+    const loginId = req.body.loginId;
+    const end_time = req.body.end_time;
+    let qr = `UPDATE n_Login_Log SET end_time="${end_time}" WHERE loginId = ${loginId}`;
+    db.query(qr, (err, result) => {
+        if(err) {
+            console.log(err);
+        } else {
+            res.send({
+                status: '400'
+            })
+        }
+    })
+})
 
 app.listen(3001, () => {
     console.log("Server Running")
